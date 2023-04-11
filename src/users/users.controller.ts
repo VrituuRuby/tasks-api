@@ -5,12 +5,14 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dtos/CreateUserDTO';
 import { UsersService } from './users.service';
 import { hash } from 'bcrypt';
 import { UpdateUserDTO } from './dtos/UpdateUserDTO';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -25,6 +27,7 @@ export class UsersController {
   }
 
   @Put('update/:id')
+  @UseGuards(AuthGuard)
   async updateUser(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateUserDTO: UpdateUserDTO,
