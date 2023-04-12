@@ -4,9 +4,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, pairwise } from 'rxjs';
 import { AuthService } from './auth.service';
 import { verify } from 'jsonwebtoken';
+import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
 
 interface IRequest {
   rawHeaders: string[];
@@ -16,33 +18,33 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
+  constructor(private jwtService: JwtService) {}
 
-    this.validateAuth(request);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromRequestHeaders(request);
+
+    if (!token) throw new UnauthorizedException('Missing token');
+
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      request['user'] = payload;
+      console.log(payload);
+    } catch (err) {
+      throw new UnauthorizedException('Wrong or expired token');
+    }
     return true;
   }
 
-  validateAuth(request: IRequest) {
-    const headers: string[] = request.rawHeaders;
+  private extractTokenFromRequestHeaders(request: Request) {
+    const bearerToken = request.rawHeaders.find((header) =>
+      header.includes('Bearer'),
+    );
 
-    console.log(request);
+    const [_, token] = bearerToken.split(' ');
 
-    const bearer = headers.find((token) => token.includes('Bearer'));
-
-    if (!bearer) throw new UnauthorizedException('Missing token');
-
-    const [_, token] = bearer.split(' ');
-
-    try {
-      const decoded = verify(token, JWT_SECRET);
-      console.log(decoded);
-
-      return true;
-    } catch (err) {
-      throw new UnauthorizedException('Wrong token');
-    }
+    return token;
   }
 }

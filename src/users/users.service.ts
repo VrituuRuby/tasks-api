@@ -74,4 +74,14 @@ export class UsersService {
     });
     return users;
   }
+
+  async getOneUserByUsername(username: string) {
+    const user = await this.prismaService.user.findFirst({
+      where: { username },
+    });
+
+    if (!user) throw new NotFoundException('User Not Found');
+
+    return user;
+  }
 }
