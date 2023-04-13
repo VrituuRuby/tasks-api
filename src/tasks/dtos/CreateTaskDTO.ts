@@ -4,11 +4,9 @@ export class CreateTaskDTO {
   @MinLength(3)
   title: string;
 
-  isDone: boolean;
+  isDone?: boolean;
 
-  createAt: Date;
+  createAt?: Date;
 
   updatedAt?: Date;
-
-  user_id: string;
 }

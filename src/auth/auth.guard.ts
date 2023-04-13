@@ -43,6 +43,8 @@ export class AuthGuard implements CanActivate {
       header.includes('Bearer'),
     );
 
+    if (!bearerToken) throw new UnauthorizedException('Missing token');
+
     const [_, token] = bearerToken.split(' ');
 
     return token;

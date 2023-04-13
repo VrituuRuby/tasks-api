@@ -1,8 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { sign, verify } from 'jsonwebtoken';
-import { PrismaService } from 'src/prisma.service';
 import { UsersService } from 'src/users/users.service';
 
 interface IAuth {

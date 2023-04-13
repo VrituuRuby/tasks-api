@@ -13,6 +13,12 @@ import { UsersService } from './users.service';
 import { hash } from 'bcrypt';
 import { UpdateUserDTO } from './dtos/UpdateUserDTO';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from './user.decorator';
+
+interface IUserPayload {
+  username: string;
+  sub: string;
+}
 
 @Controller('users')
 export class UsersController {
@@ -26,13 +32,13 @@ export class UsersController {
     });
   }
 
-  @Put('update/:id')
+  @Put('update')
   @UseGuards(AuthGuard)
   async updateUser(
-    @Param('id') id: string,
+    @User() user: IUserPayload,
     @Body(new ValidationPipe()) updateUserDTO: UpdateUserDTO,
   ) {
-    return this.userService.updateUser(id, {
+    return this.userService.updateUser(user.sub, {
       ...updateUserDTO,
       password: await hash(updateUserDTO.password, 8),
     });
