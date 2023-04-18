@@ -6,9 +6,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateTaskDTO } from './dtos/CreateTaskDTO';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { UpdateTaskDTO } from './dtos/UpdateTaskDTO';
-import { User } from 'src/users/user.decorator';
 
 @Injectable()
 export class TasksService {
