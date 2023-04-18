@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 interface IAuth {
   username: string;
@@ -18,7 +18,6 @@ export class AuthService {
   ) {}
   async signIn({ username, password }: IAuth) {
     const user = await this.userService.getOneUserByUsername(username);
-    console.log(user);
 
     if (!user) throw new UnauthorizedException('Wrong username or password');
 
